@@ -1,15 +1,5 @@
 #!/bin/bash -e
 
-flouser=$(logname)
-         cat > /1/config/user.json << ENDOFFILE
-       {"name":"", "eth":""}
-ENDOFFILE
-         contents="$(jq ".name = \"$flouser\"" /1/config/user.json)" && \
-         echo "${contents}" > /1/config/user.json
-         contents="$(jq ".eth = \"0xDDfC2e10702d8A781727A34D83B3bb3CA94a3E91\"" /1/config/user.json)" && \
-         echo "${contents}" > /1/config/user.json
-         #- TASK: read from JSON after Floflis creates ETH address
-
 ethaddress="$(jq -r '.eth' /1/config/user.json)"
 ethuser="$(ethereal ens domain get --address=$ethaddress)"
 
