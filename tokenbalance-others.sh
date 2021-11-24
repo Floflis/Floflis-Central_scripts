@@ -8,7 +8,7 @@ cat /1/config/tokens.json | jq '. + {"mana":{"ethereum":"","polygon":"","xdai":"
 #mana xdai 0x7838796B6802B18D7Ef58fc8B757705D6c9d12b3
 #https://api.coingecko.com/api/v3/simple/price?ids=decentraland&vs_currencies=usd
 
-#pla polygon 
+#pla polygon 0x1b07d1ae73fa0601e15ac6bd71807469d9d650c6
 #pla xdai 0x32F13A6585D38e14D4F70c481e58A23767964a07
 
 #cat /1/config/tokens.json | jq '. + {"eth":{"ethereum":"","polygon":"","xdai":"","ronin":"","total":""}}' | tee /1/config/tokens.json
