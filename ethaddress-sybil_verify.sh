@@ -14,14 +14,14 @@ twitterprofile="$(curl -s "https://raw.githubusercontent.com/Uniswap/sybil-list/
 if [ "$twitterprofile" = "null" ]; then
    contents="$(jq '.sybiltwitter = "no"' /1/config/user.json)" && \
    echo "${contents}" > /1/config/user.json
-   echo "Account $ethaddress have no verified Twitter profile at Sybil.org"
+   echo "⚠ Account $ethaddress have no verified Twitter profile at Sybil.org"
    
 else
    contents="$(jq ".sybiltwitter = \"$twitterprofile\"" /1/config/user.json)" && \
    echo "${contents}" > /1/config/user.json
-   echo "$ethaddress's verified Twitter profile at Sybil.org is:"
+   echo "✅ $ethaddress's verified Twitter profile at Sybil.org is:"
    echo "$twitterprofile"
 fi
 }
 
-if online -s; then letsgo; else echo "Cannot verify Twitter profile. Your device is offline."; fi
+if online -s; then letsgo; else echo "📶❌ Cannot verify Twitter profile. Your device is offline."; fi
