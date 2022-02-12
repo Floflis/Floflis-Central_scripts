@@ -3,7 +3,8 @@
 if [ "$(jq -r '.sybiltwitter' /1/config/user.json)" = "null" ]; then
    echo "Its your first time using 'ethaddress-sybil_verify'!"
    echo "Initializing..."
-   cat /1/config/user.json | jq '. + {"sybiltwitter": ""}' | tee /1/config/user.json
+   #cat /1/config/user.json | jq '. + {"sybiltwitter": ""}' | tee /1/config/user.json
+   tmp="$(mktemp)"; cat /1/config/user.json | jq '. + {sybiltwitter: ""}' >"$tmp" && mv "$tmp" /1/config/user.json
 fi
 
 letsgo () {
