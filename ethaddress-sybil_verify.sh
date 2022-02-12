@@ -16,6 +16,7 @@ if [ "$twitterprofile" = "null" ]; then
    contents="$(jq '.sybiltwitter = "no"' /1/config/user.json)" && \
    echo "${contents}" > /1/config/user.json
    echo "⚠ Account $ethaddress have no verified Twitter profile at Sybil.org"
+   echo "You can verify your ETH address with your Twitter account, here: https://sybil.org/#/delegates/uniswap"
    
 else
    contents="$(jq ".sybiltwitter = \"$twitterprofile\"" /1/config/user.json)" && \
