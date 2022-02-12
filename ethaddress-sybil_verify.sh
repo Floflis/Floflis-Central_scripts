@@ -1,5 +1,15 @@
-#!/bin/bash
+#!/bin/sh
 
-ethaddress="0x535b3ddD9939056cB6d74D1253Ae1A4Adf5d723A" # example
+letsgo () {
+ethaddress="$(jq -r '.eth' /1/config/user.json)"
 
-curl -s "https://raw.githubusercontent.com/Uniswap/sybil-list/master/verified.json" | jq -r ".\"$ethaddress\".twitter.handle"
+twitterprofile="$(curl -s "https://raw.githubusercontent.com/Uniswap/sybil-list/master/verified.json" | jq -r ".\"$ethaddress\".twitter.handle")"
+
+echo "$twitterprofile"
+
+if [ "$twitterprofile" = "" ]; then
+   echo "Account $ethaddress have no verified Twitter profile at Sybil.org"
+fi
+}
+
+if online -s; then letsgo; else echo "Cannot verify Twitter profile. Your device is offline."; fi
