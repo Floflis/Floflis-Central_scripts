@@ -32,21 +32,26 @@ echo "----"
 echo "FLOF total balance: $tokentotalbalance"
 #echo "FLOF total balance: $count"
 
-
-
-
 cat > /1/config/tokens.json << ENDOFFILE
 {
 	"flof": {
 		"polygon": "",
 		"xdai": "",
-		"total": ""
+		"total": "",
+		"totalusd":""
 	}
 }
 ENDOFFILE
-         contents="$(jq ".flof.polygon = \"$tokenbalancematic\"" /1/config/tokens.json)" && \
-         echo "${contents}" > /1/config/tokens.json
-         contents="$(jq ".flof.xdai = \"$tokenbalancexdai\"" /1/config/tokens.json)" && \
-         echo "${contents}" > /1/config/tokens.json
-         contents="$(jq ".flof.total = \"$tokentotalbalance\"" /1/config/tokens.json)" && \
-         echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".flof.polygon = \"$tokenbalancematic\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".flof.xdai = \"$tokenbalancexdai\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".flof.total = \"$tokentotalbalance\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+
+tokenUSDtotalbalanceget="$(curl -s "https://api.coingecko.com/api/v3/simple/price?ids=floflis&vs_currencies=usd" | jq -r ".floflis.usd")"
+tokenUSDtotalbalance=$(echo "$tokentotalbalance * $tokenUSDtotalbalanceget"|bc)
+contents="$(jq ".flof.totalusd = \"$tokenUSDtotalbalance\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+
+bash tokenbalance-others.sh

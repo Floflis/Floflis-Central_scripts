@@ -11,26 +11,26 @@ rpc_xdai="https://rpc.xdaichain.com/"
 if [ "$(jq -r '.eth' /1/config/tokens.json)" = "null" ]; then
    echo "Its your first time using tokenbalance-others.sh!"
    echo "Initializing for ETH token..."
-   tmp="$(mktemp)"; cat /1/config/tokens.json | jq '. + {"eth":{"ethereum":"","polygon":"","xdai":"","ronin":"","total":""}}' >"$tmp" && mv "$tmp" /1/config/tokens.json
+   tmp="$(mktemp)"; cat /1/config/tokens.json | jq '. + {"eth":{"ethereum":"","polygon":"","xdai":"","ronin":"","total":"","totalusd":""}}' >"$tmp" && mv "$tmp" /1/config/tokens.json
 fi
 
 #cat /1/config/tokens.json | jq '. + {"pla":{"polygon":"","xdai":"","total":""}}' | tee /1/config/tokens.json
 if [ "$(jq -r '.pla' /1/config/tokens.json)" = "null" ]; then
    echo "Initializing for PLA token..."
-   tmp="$(mktemp)"; cat /1/config/tokens.json | jq '. + {"pla":{"polygon":"","xdai":"","total":""}}' >"$tmp" && mv "$tmp" /1/config/tokens.json
+   tmp="$(mktemp)"; cat /1/config/tokens.json | jq '. + {"pla":{"polygon":"","xdai":"","total":"","totalusd":""}}' >"$tmp" && mv "$tmp" /1/config/tokens.json
 fi
 
 #game polygon 
 
 if [ "$(jq -r '.game' /1/config/tokens.json)" = "null" ]; then
    echo "Initializing for GAME token..."
-   tmp="$(mktemp)"; cat /1/config/tokens.json | jq '. + {"game":{"polygon":"","xdai":"","total":""}}' >"$tmp" && mv "$tmp" /1/config/tokens.json
+   tmp="$(mktemp)"; cat /1/config/tokens.json | jq '. + {"game":{"polygon":"","xdai":"","total":"","totalusd":""}}' >"$tmp" && mv "$tmp" /1/config/tokens.json
 fi
 
 #cat /1/config/tokens.json | jq '. + {"mana":{"ethereum":"","polygon":"","xdai":"","total":""}}' | tee /1/config/tokens.json
 if [ "$(jq -r '.mana' /1/config/tokens.json)" = "null" ]; then
    echo "Initializing for MANA token..."
-   tmp="$(mktemp)"; cat /1/config/tokens.json | jq '. + {"mana":{"ethereum":"","polygon":"","xdai":"","total":""}}' >"$tmp" && mv "$tmp" /1/config/tokens.json
+   tmp="$(mktemp)"; cat /1/config/tokens.json | jq '. + {"mana":{"ethereum":"","polygon":"","xdai":"","total":"","totalusd":""}}' >"$tmp" && mv "$tmp" /1/config/tokens.json
 fi
 
 #cat /1/config/tokens.json | jq '. + {"dai":{"ethereum":"","polygon":"","xdai":"","total":""}}' | tee /1/config/tokens.json
@@ -53,11 +53,17 @@ fi
 #usdc xdai 
 #usdc ronin 
 
+if [ "$(jq -r '.usd' /1/config/tokens.json)" = "null" ]; then
+   echo "Initializing for USD..."
+   tmp="$(mktemp)"; cat /1/config/tokens.json | jq '. + {"usd":{"total":""}}' >"$tmp" && mv "$tmp" /1/config/tokens.json
+fi
+
 processtoken () {
 if [ "$currenttoken" = "eth" ]; then
    currenttoken_ethereum=""
    currenttoken_polygon="0x7ceb23fd6bc0add59e62ac25578270cff1b9f619"
    currenttoken_xdai="0x6A023CCd1ff6F2045C3309768eAd9E68F978f6e1"
+   currenttoken_coingeckoname="ethereum"
    echo "Updating ETH token..."
 fi
 
@@ -65,6 +71,7 @@ if [ "$currenttoken" = "pla" ]; then
    currenttoken_ethereum=""
    currenttoken_polygon="0x1b07d1ae73fa0601e15ac6bd71807469d9d650c6"
    currenttoken_xdai="0x32F13A6585D38e14D4F70c481e58A23767964a07"
+   currenttoken_coingeckoname=""
    echo "Updating PLA token..."
 fi
 
@@ -72,6 +79,7 @@ if [ "$currenttoken" = "game" ]; then
    currenttoken_ethereum=""
    currenttoken_polygon=""
    currenttoken_xdai="0x4a1901b120e777a2c3d0A19ef41B264cdBCdEe69"
+   currenttoken_coingeckoname=""
    echo "Updating GAME token..."
 fi
 
@@ -79,8 +87,8 @@ if [ "$currenttoken" = "mana" ]; then
    currenttoken_ethereum="0x0f5d2fb29fb7d3cfee444a200298f468908cc942"
    currenttoken_polygon="0xa1c57f48f0deb89f569dfbe6e2b7f46d33606fd4"
    currenttoken_xdai="0x7838796B6802B18D7Ef58fc8B757705D6c9d12b3"
+   currenttoken_coingeckoname="decentraland"
    echo "Updating MANA token..."
-#https://api.coingecko.com/api/v3/simple/price?ids=decentraland&vs_currencies=usd
 fi
 
 #if [ "$currenttoken_ethereum" != "" ]; then
@@ -101,6 +109,11 @@ tokenbalancexdai="$(printf "%.2f\n" $(echo "$tokenFULLbalancexdai" | bc -l))"
 #tokenbalanceron="$(printf "%.2f\n" $(echo "$tokenFULLbalanceron" | bc -l))"
 
 tokentotalbalance=$(echo "$tokenbalanceeth + $tokenbalancematic + $tokenbalancexdai"|bc)
+
+tokenUSDtotalbalanceget="$(curl -s "https://api.coingecko.com/api/v3/simple/price?ids=$currenttoken_coingeckoname&vs_currencies=usd" | jq -r ".\"$currenttoken_coingeckoname\".usd")"
+tokenUSDtotalbalance=$(echo "$tokentotalbalance * $tokenUSDtotalbalanceget"|bc)
+
+#echo "USD: $tokenUSDtotalbalance. Used: $tokentotalbalance and $tokenUSDtotalbalanceget"
 }
 
 currenttoken="eth"
@@ -119,7 +132,12 @@ echo "${contents}" > /1/config/tokens.json
 #-
 tokentotalbalance=$(echo "$ethbalance + $tokenbalancematic + $tokenbalancexdai"|bc)
 #-
+tokenUSDtotalbalance=$(echo "$tokentotalbalance * $tokenUSDtotalbalanceget"|bc)
+#echo "USD: $tokenUSDtotalbalance. Used: $tokentotalbalance and $tokenUSDtotalbalanceget"
+#-
 contents="$(jq ".eth.total = \"$tokentotalbalance\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".eth.totalusd = \"$tokenUSDtotalbalance\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
 
 currenttoken="pla"
@@ -130,6 +148,8 @@ contents="$(jq ".pla.xdai = \"$tokenbalancexdai\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
 contents="$(jq ".pla.total = \"$tokentotalbalance\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".pla.totalusd = \"$tokenUSDtotalbalance\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
 
 currenttoken="game"
 processtoken
@@ -138,6 +158,8 @@ echo "${contents}" > /1/config/tokens.json
 contents="$(jq ".game.xdai = \"$tokenbalancexdai\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
 contents="$(jq ".game.total = \"$tokentotalbalance\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".game.totalusd = \"$tokenUSDtotalbalance\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
 
 currenttoken="mana"
@@ -149,4 +171,15 @@ echo "${contents}" > /1/config/tokens.json
 contents="$(jq ".mana.xdai = \"$tokenbalancexdai\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
 contents="$(jq ".mana.total = \"$tokentotalbalance\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".mana.totalusd = \"$tokenUSDtotalbalance\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+
+tmp1="$(jq -r '.flof.totalusd' /1/config/tokens.json)"
+tmp2="$(jq -r '.eth.totalusd' /1/config/tokens.json)"
+tmp3="$(jq -r '.pla.totalusd' /1/config/tokens.json)"
+tmp4="$(jq -r '.game.totalusd' /1/config/tokens.json)"
+tmp5="$(jq -r '.mana.totalusd' /1/config/tokens.json)"
+alltokensUSDtotalbalance=$(echo "$tmp1 + $tmp2 + $tmp3 + $tmp4 + $tmp5"|bc)
+contents="$(jq ".usd.total = \"$alltokensUSDtotalbalance\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
