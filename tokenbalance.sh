@@ -32,7 +32,10 @@ echo "----"
 echo "FLOF total balance: $tokentotalbalance"
 #echo "FLOF total balance: $count"
 
-cat > /1/config/tokens.json << ENDOFFILE
+if [ "$(jq -r '.flof' /1/config/tokens.json)" = "null" ]; then
+   echo "Its your first time using tokenbalance.sh!"
+   echo "Initializing..."
+   cat > /1/config/tokens.json << ENDOFFILE
 {
 	"flof": {
 		"polygon": "",
@@ -42,6 +45,7 @@ cat > /1/config/tokens.json << ENDOFFILE
 	}
 }
 ENDOFFILE
+fi
 contents="$(jq ".flof.polygon = \"$tokenbalancematic\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
 contents="$(jq ".flof.xdai = \"$tokenbalancexdai\"" /1/config/tokens.json)" && \
