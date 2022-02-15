@@ -38,6 +38,11 @@ if [ "$(jq -r '.sand' /1/config/tokens.json)" = "null" ]; then
    tmp="$(mktemp)"; cat /1/config/tokens.json | jq '. + {"sand":{"ethereum":"","polygon":"","total":"","totalusd":""}}' >"$tmp" && mv "$tmp" /1/config/tokens.json
 fi
 
+if [ "$(jq -r '.dai' /1/config/tokens.json)" = "null" ]; then
+   echo "Initializing for DAI token..."
+   tmp="$(mktemp)"; cat /1/config/tokens.json | jq '. + {"dai":{"ethereum":"","polygon":"","xdai":"","total":"","totalusd":""}}' >"$tmp" && mv "$tmp" /1/config/tokens.json
+fi
+
 #cat /1/config/tokens.json | jq '. + {"dai":{"ethereum":"","polygon":"","xdai":"","total":""}}' | tee /1/config/tokens.json
 #cat /1/config/tokens.json | jq '. + {"matic":{"ethereum":"","polygon":"","total":""}}' | tee /1/config/tokens.json
 
@@ -104,6 +109,14 @@ if [ "$currenttoken" = "sand" ]; then
    echo "Updating SAND token..."
 fi
 
+if [ "$currenttoken" = "dai" ]; then
+   currenttoken_ethereum="0x6b175474e89094c44da98b954eedeac495271d0f"
+   currenttoken_polygon="0x8f3cf7ad23cd3cadbd9735aff958023239c6a063"
+   currenttoken_xdai=""
+   currenttoken_coingeckoname="dai"
+   echo "Updating DAI token..."
+fi
+
 #if [ "$currenttoken_ethereum" != "" ]; then
 #   tokenFULLbalanceeth="$(ethereal token balance --holder=$ethaddress --token=$currenttoken_ethereum)"
 #   tokenbalanceeth="$(printf "%.2f\n" $(echo "$tokenFULLbalanceeth" | bc -l))"
@@ -144,9 +157,7 @@ contents="$(jq ".eth.xdai = \"$tokenbalancexdai\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
 #-
 tokentotalbalance=$(echo "$ethbalance + $tokenbalancematic + $tokenbalancexdai"|bc)
-#-
 tokenUSDtotalbalance=$(echo "$tokentotalbalance * $tokenUSDtotalbalanceget"|bc)
-#echo "USD: $tokenUSDtotalbalance. Used: $tokentotalbalance and $tokenUSDtotalbalanceget"
 #-
 contents="$(jq ".eth.total = \"$tokentotalbalance\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
@@ -199,12 +210,32 @@ echo "${contents}" > /1/config/tokens.json
 contents="$(jq ".sand.totalusd = \"$tokenUSDtotalbalance\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
 
+currenttoken="dai"
+processtoken
+contents="$(jq ".dai.ethereum = \"$tokenbalanceeth\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".dai.polygon = \"$tokenbalancematic\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+#-
+daibalanceprepare="$(ethereal --connection=$rpc_xdai ether balance --address=$ethaddress)"
+daibalance="$(echo "$daibalanceprepare" | sed 's/ Ether//g')"
+contents="$(jq ".dai.xdai = \"$daibalance\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+tokentotalbalance=$(echo "$tokenbalanceeth + $tokenbalancematic + $daibalance"|bc)
+tokenUSDtotalbalance=$(echo "$tokentotalbalance * $tokenUSDtotalbalanceget"|bc)
+#-
+contents="$(jq ".dai.total = \"$tokentotalbalance\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".dai.totalusd = \"$tokenUSDtotalbalance\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+
 tmp1="$(jq -r '.flof.totalusd' /1/config/tokens.json)"
 tmp2="$(jq -r '.eth.totalusd' /1/config/tokens.json)"
 tmp3="$(jq -r '.pla.totalusd' /1/config/tokens.json)"
 tmp4="$(jq -r '.game.totalusd' /1/config/tokens.json)"
 tmp5="$(jq -r '.mana.totalusd' /1/config/tokens.json)"
 tmp6="$(jq -r '.sand.totalusd' /1/config/tokens.json)"
-alltokensUSDtotalbalance=$(echo "$tmp1 + $tmp2 + $tmp3 + $tmp4 + $tmp5 + $tmp6"|bc)
+tmp7="$(jq -r '.dai.totalusd' /1/config/tokens.json)"
+alltokensUSDtotalbalance=$(echo "$tmp1 + $tmp2 + $tmp3 + $tmp4 + $tmp5 + $tmp6 + $tmp7"|bc)
 contents="$(jq ".usd.total = \"$alltokensUSDtotalbalance\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
