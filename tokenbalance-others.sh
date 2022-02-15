@@ -33,6 +33,11 @@ if [ "$(jq -r '.mana' /1/config/tokens.json)" = "null" ]; then
    tmp="$(mktemp)"; cat /1/config/tokens.json | jq '. + {"mana":{"ethereum":"","polygon":"","xdai":"","total":"","totalusd":""}}' >"$tmp" && mv "$tmp" /1/config/tokens.json
 fi
 
+if [ "$(jq -r '.sand' /1/config/tokens.json)" = "null" ]; then
+   echo "Initializing for SAND token..."
+   tmp="$(mktemp)"; cat /1/config/tokens.json | jq '. + {"sand":{"ethereum":"","polygon":"","total":"","totalusd":""}}' >"$tmp" && mv "$tmp" /1/config/tokens.json
+fi
+
 #cat /1/config/tokens.json | jq '. + {"dai":{"ethereum":"","polygon":"","xdai":"","total":""}}' | tee /1/config/tokens.json
 #cat /1/config/tokens.json | jq '. + {"matic":{"ethereum":"","polygon":"","total":""}}' | tee /1/config/tokens.json
 
@@ -89,6 +94,14 @@ if [ "$currenttoken" = "mana" ]; then
    currenttoken_xdai="0x7838796B6802B18D7Ef58fc8B757705D6c9d12b3"
    currenttoken_coingeckoname="decentraland"
    echo "Updating MANA token..."
+fi
+
+if [ "$currenttoken" = "sand" ]; then
+   currenttoken_ethereum="0x3845badade8e6dff049820680d1f14bd3903a5d0"
+   currenttoken_polygon="0xbbba073c31bf03b8acf7c28ef0738decf3695683"
+   currenttoken_xdai=""
+   currenttoken_coingeckoname="the-sandbox"
+   echo "Updating SAND token..."
 fi
 
 #if [ "$currenttoken_ethereum" != "" ]; then
@@ -175,11 +188,23 @@ echo "${contents}" > /1/config/tokens.json
 contents="$(jq ".mana.totalusd = \"$tokenUSDtotalbalance\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
 
+currenttoken="sand"
+processtoken
+contents="$(jq ".sand.ethereum = \"$tokenbalanceeth\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".sand.polygon = \"$tokenbalancematic\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".sand.total = \"$tokentotalbalance\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".sand.totalusd = \"$tokenUSDtotalbalance\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+
 tmp1="$(jq -r '.flof.totalusd' /1/config/tokens.json)"
 tmp2="$(jq -r '.eth.totalusd' /1/config/tokens.json)"
 tmp3="$(jq -r '.pla.totalusd' /1/config/tokens.json)"
 tmp4="$(jq -r '.game.totalusd' /1/config/tokens.json)"
 tmp5="$(jq -r '.mana.totalusd' /1/config/tokens.json)"
-alltokensUSDtotalbalance=$(echo "$tmp1 + $tmp2 + $tmp3 + $tmp4 + $tmp5"|bc)
+tmp6="$(jq -r '.sand.totalusd' /1/config/tokens.json)"
+alltokensUSDtotalbalance=$(echo "$tmp1 + $tmp2 + $tmp3 + $tmp4 + $tmp5 + $tmp6"|bc)
 contents="$(jq ".usd.total = \"$alltokensUSDtotalbalance\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
