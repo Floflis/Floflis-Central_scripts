@@ -139,7 +139,7 @@ if [ "$currenttoken" = "matic" ]; then
    currenttoken_ethereum="0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0"
    currenttoken_polygon=""
    currenttoken_xdai="0x7122d7661c4564b7C6Cd4878B06766489a6028A2"
-   currenttoken_coingeckoname=""
+   currenttoken_coingeckoname="polygon"
    echo "Updating MATIC token..."
 fi
 
