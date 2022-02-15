@@ -32,7 +32,7 @@ echo "----"
 echo "FLOF total balance: $tokentotalbalance"
 #echo "FLOF total balance: $count"
 
-if [ "$(jq -r '.flof' /1/config/tokens.json)" = "null" ]; then
+if [ "$(jq -r '.flof' /1/config/tokens.json)" = "null" ] || [ "$(jq -r '.flof' /1/config/tokens.json)" = "" ]; then
    echo "Its your first time using tokenbalance.sh!"
    echo "Initializing..."
    cat > /1/config/tokens.json << ENDOFFILE
