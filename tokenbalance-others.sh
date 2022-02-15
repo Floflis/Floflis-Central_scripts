@@ -48,6 +48,11 @@ if [ "$(jq -r '.gno' /1/config/tokens.json)" = "null" ]; then
    tmp="$(mktemp)"; cat /1/config/tokens.json | jq '. + {"gno":{"ethereum":"","polygon":"","xdai":"","total":"","totalusd":""}}' >"$tmp" && mv "$tmp" /1/config/tokens.json
 fi
 
+if [ "$(jq -r '.matic' /1/config/tokens.json)" = "null" ]; then
+   echo "Initializing for MATIC token..."
+   tmp="$(mktemp)"; cat /1/config/tokens.json | jq '. + {"matic":{"ethereum":"","polygon":"","xdai":"","total":"","totalusd":""}}' >"$tmp" && mv "$tmp" /1/config/tokens.json
+fi
+
 #cat /1/config/tokens.json | jq '. + {"dai":{"ethereum":"","polygon":"","xdai":"","total":""}}' | tee /1/config/tokens.json
 #cat /1/config/tokens.json | jq '. + {"matic":{"ethereum":"","polygon":"","total":""}}' | tee /1/config/tokens.json
 
@@ -128,6 +133,14 @@ if [ "$currenttoken" = "gno" ]; then
    currenttoken_xdai="0x9c58bacc331c9aa871afd802db6379a98e80cedb"
    currenttoken_coingeckoname="gnosis"
    echo "Updating GNO token..."
+fi
+
+if [ "$currenttoken" = "matic" ]; then
+   currenttoken_ethereum="0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0"
+   currenttoken_polygon=""
+   currenttoken_xdai="0x7122d7661c4564b7C6Cd4878B06766489a6028A2"
+   currenttoken_coingeckoname=""
+   echo "Updating MATIC token..."
 fi
 
 #if [ "$currenttoken_ethereum" != "" ]; then
@@ -255,6 +268,27 @@ echo "${contents}" > /1/config/tokens.json
 contents="$(jq ".gno.totalusd = \"$tokenUSDtotalbalance\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
 
+currenttoken="matic"
+processtoken
+contents="$(jq ".matic.ethereum = \"$tokenbalanceeth\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+#-
+maticbalanceprepare="$(ethereal --connection=$rpc_polygon ether balance --address=$ethaddress)"
+maticbalance="$(echo "$maticbalanceprepare" | sed 's/ Ether//g')"
+contents="$(jq ".matic.polygon = \"$maticbalance\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+#-
+contents="$(jq ".matic.xdai = \"$tokenbalancexdai\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+#-
+tokentotalbalance=$(echo "$tokenbalanceeth + $maticbalance + $tokenbalancexdai"|bc)
+tokenUSDtotalbalance=$(echo "$tokentotalbalance * $tokenUSDtotalbalanceget"|bc)
+#-
+contents="$(jq ".matic.total = \"$tokentotalbalance\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".matic.totalusd = \"$tokenUSDtotalbalance\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+
 tmp1="$(jq -r '.flof.totalusd' /1/config/tokens.json)"
 tmp2="$(jq -r '.eth.totalusd' /1/config/tokens.json)"
 tmp3="$(jq -r '.pla.totalusd' /1/config/tokens.json)"
@@ -263,6 +297,7 @@ tmp5="$(jq -r '.mana.totalusd' /1/config/tokens.json)"
 tmp6="$(jq -r '.sand.totalusd' /1/config/tokens.json)"
 tmp7="$(jq -r '.dai.totalusd' /1/config/tokens.json)"
 tmp8="$(jq -r '.gno.totalusd' /1/config/tokens.json)"
-alltokensUSDtotalbalance=$(echo "$tmp1 + $tmp2 + $tmp3 + $tmp4 + $tmp5 + $tmp6 + $tmp7 + $tmp8"|bc)
+tmp9="$(jq -r '.matic.totalusd' /1/config/tokens.json)"
+alltokensUSDtotalbalance=$(echo "$tmp1 + $tmp2 + $tmp3 + $tmp4 + $tmp5 + $tmp6 + $tmp7 + $tmp8 + $tmp9"|bc)
 contents="$(jq ".usd.total = \"$alltokensUSDtotalbalance\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
