@@ -335,7 +335,7 @@ currenttoken="slp"
 processtoken
 contents="$(jq ".slp.ethereum = \"$tokenbalanceeth\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
-contents="$(jq ".slp.polygon = \"$tokenbalanceslp\"" /1/config/tokens.json)" && \
+contents="$(jq ".slp.polygon = \"$tokenbalancematic\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
 contents="$(jq ".slp.xdai = \"$tokenbalancexdai\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
@@ -350,7 +350,7 @@ currenttoken="axs"
 processtoken
 contents="$(jq ".axs.ethereum = \"$tokenbalanceeth\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
-contents="$(jq ".axs.polygon = \"$tokenbalanceaxs\"" /1/config/tokens.json)" && \
+contents="$(jq ".axs.polygon = \"$tokenbalancematic\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
 contents="$(jq ".axs.xdai = \"$tokenbalancexdai\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
@@ -365,7 +365,7 @@ currenttoken="usdc"
 processtoken
 contents="$(jq ".usdc.ethereum = \"$tokenbalanceeth\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
-contents="$(jq ".usdc.polygon = \"$tokenbalanceusdc\"" /1/config/tokens.json)" && \
+contents="$(jq ".usdc.polygon = \"$tokenbalancematic\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
 contents="$(jq ".usdc.xdai = \"$tokenbalancexdai\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
