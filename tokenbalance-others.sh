@@ -53,6 +53,21 @@ if [ "$(jq -r '.matic' /1/config/tokens.json)" = "null" ]; then
    tmp="$(mktemp)"; cat /1/config/tokens.json | jq '. + {"matic":{"ethereum":"","polygon":"","xdai":"","total":"","totalusd":""}}' >"$tmp" && mv "$tmp" /1/config/tokens.json
 fi
 
+if [ "$(jq -r '.slp' /1/config/tokens.json)" = "null" ]; then
+   echo "Initializing for SLP token..."
+   tmp="$(mktemp)"; cat /1/config/tokens.json | jq '. + {"slp":{"ethereum":"","polygon":"","xdai":"","ronin":"","total":"","totalusd":""}}' >"$tmp" && mv "$tmp" /1/config/tokens.json
+fi
+
+if [ "$(jq -r '.axs' /1/config/tokens.json)" = "null" ]; then
+   echo "Initializing for AXS token..."
+   tmp="$(mktemp)"; cat /1/config/tokens.json | jq '. + {"axs":{"ethereum":"","polygon":"","xdai":"","total":"","totalusd":""}}' >"$tmp" && mv "$tmp" /1/config/tokens.json
+fi
+
+if [ "$(jq -r '.usdc' /1/config/tokens.json)" = "null" ]; then
+   echo "Initializing for USDC token..."
+   tmp="$(mktemp)"; cat /1/config/tokens.json | jq '. + {"usdc":{"ethereum":"","polygon":"","xdai":"","total":"","totalusd":""}}' >"$tmp" && mv "$tmp" /1/config/tokens.json
+fi
+
 #cat /1/config/tokens.json | jq '. + {"dai":{"ethereum":"","polygon":"","xdai":"","total":""}}' | tee /1/config/tokens.json
 #cat /1/config/tokens.json | jq '. + {"matic":{"ethereum":"","polygon":"","total":""}}' | tee /1/config/tokens.json
 
@@ -141,6 +156,33 @@ if [ "$currenttoken" = "matic" ]; then
    currenttoken_xdai="0x7122d7661c4564b7C6Cd4878B06766489a6028A2"
    currenttoken_coingeckoname="matic-network"
    echo "Updating MATIC token..."
+fi
+
+if [ "$currenttoken" = "slp" ]; then
+   currenttoken_ethereum="0xCC8Fa225D80b9c7D42F96e9570156c65D6cAAa25"
+   currenttoken_polygon=""
+   currenttoken_xdai=""
+#   currenttoken_ronin="0xa8754b9fa15fc18bb59458815510e40a12cd2014"
+   currenttoken_coingeckoname="smooth-love-potion"
+   echo "Updating SLP token..."
+fi
+
+if [ "$currenttoken" = "axs" ]; then
+   currenttoken_ethereum="0xbb0e17ef65f82ab018d8edd776e8dd940327b28b"
+   currenttoken_polygon=""
+   currenttoken_xdai=""
+#   currenttoken_ronin="0x97a9107c1793bc407d6f527b77e7fff4d812bece"
+   currenttoken_coingeckoname="axie-infinity"
+   echo "Updating AXS token..."
+fi
+
+if [ "$currenttoken" = "usdc" ]; then
+   currenttoken_ethereum="0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+   currenttoken_polygon="0x2791bca1f2de4661ed88a30c99a7a9449aa84174"
+   currenttoken_xdai="0xddafbb505ad214d7b80b1f830fccc89b60fb7a83"
+#   currenttoken_ronin="0x0b7007c13325c48911f73a2dad5fa5dcbf808adc"
+   currenttoken_coingeckoname="usd-coin"
+   echo "Updating USDC token..."
 fi
 
 #if [ "$currenttoken_ethereum" != "" ]; then
@@ -289,6 +331,51 @@ echo "${contents}" > /1/config/tokens.json
 contents="$(jq ".matic.totalusd = \"$tokenUSDtotalbalance\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
 
+currenttoken="slp"
+processtoken
+contents="$(jq ".slp.ethereum = \"$tokenbalanceeth\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".slp.polygon = \"$tokenbalanceslp\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".slp.xdai = \"$tokenbalancexdai\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+#contents="$(jq ".slp.ronin = \"$tokenbalanceronin\"" /1/config/tokens.json)" && \
+#echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".slp.total = \"$tokentotalbalance\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".slp.totalusd = \"$tokenUSDtotalbalance\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+
+currenttoken="axs"
+processtoken
+contents="$(jq ".axs.ethereum = \"$tokenbalanceeth\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".axs.polygon = \"$tokenbalanceaxs\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".axs.xdai = \"$tokenbalancexdai\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+#contents="$(jq ".axs.ronin = \"$tokenbalanceronin\"" /1/config/tokens.json)" && \
+#echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".axs.total = \"$tokentotalbalance\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".axs.totalusd = \"$tokenUSDtotalbalance\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+
+currenttoken="usdc"
+processtoken
+contents="$(jq ".usdc.ethereum = \"$tokenbalanceeth\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".usdc.polygon = \"$tokenbalanceusdc\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".usdc.xdai = \"$tokenbalancexdai\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+#contents="$(jq ".usdc.ronin = \"$tokenbalanceronin\"" /1/config/tokens.json)" && \
+#echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".usdc.total = \"$tokentotalbalance\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+contents="$(jq ".usdc.totalusd = \"$tokenUSDtotalbalance\"" /1/config/tokens.json)" && \
+echo "${contents}" > /1/config/tokens.json
+
 tmp1="$(jq -r '.flof.totalusd' /1/config/tokens.json)"
 tmp2="$(jq -r '.eth.totalusd' /1/config/tokens.json)"
 tmp3="$(jq -r '.pla.totalusd' /1/config/tokens.json)"
@@ -298,6 +385,9 @@ tmp6="$(jq -r '.sand.totalusd' /1/config/tokens.json)"
 tmp7="$(jq -r '.dai.totalusd' /1/config/tokens.json)"
 tmp8="$(jq -r '.gno.totalusd' /1/config/tokens.json)"
 tmp9="$(jq -r '.matic.totalusd' /1/config/tokens.json)"
-alltokensUSDtotalbalance=$(echo "$tmp1 + $tmp2 + $tmp3 + $tmp4 + $tmp5 + $tmp6 + $tmp7 + $tmp8 + $tmp9"|bc)
+tmp10="$(jq -r '.slp.totalusd' /1/config/tokens.json)"
+tmp11="$(jq -r '.axs.totalusd' /1/config/tokens.json)"
+tmp12="$(jq -r '.usdc.totalusd' /1/config/tokens.json)"
+alltokensUSDtotalbalance=$(echo "$tmp1 + $tmp2 + $tmp3 + $tmp4 + $tmp5 + $tmp6 + $tmp7 + $tmp8 + $tmp9 + $tmp10 + $tmp11 + $tmp12"|bc)
 contents="$(jq ".usd.total = \"$alltokensUSDtotalbalance\"" /1/config/tokens.json)" && \
 echo "${contents}" > /1/config/tokens.json
