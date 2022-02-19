@@ -4,7 +4,7 @@ ethaddress="$(jq -r '.eth' /1/config/user.json)"
 
 #rpc_ethereum="https://main-light.eth.linkpool.io/"
 rpc_polygon="https://rpc-mainnet.maticvigil.com/"
-rpc_xdai="https://rpc.xdaichain.com/"
+rpc_xdai="https://rpc.gnosischain.com/"
 #rpc_ronin=""
 
 #cat /1/config/tokens.json | jq '. + {"eth":{"ethereum":"","polygon":"","xdai":"","ronin":"","total":""}}' | tee /1/config/tokens.json

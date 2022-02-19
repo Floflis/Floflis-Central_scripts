@@ -4,7 +4,7 @@ ethaddress="$(jq -r '.eth' /1/config/user.json)"
 ethuser="$(ethereal ens domain get --address=$ethaddress)"
 
 rpc_polygon="https://rpc-mainnet.maticvigil.com/"
-rpc_xdai="https://rpc.xdaichain.com/"
+rpc_xdai="https://rpc.gnosischain.com/"
 
 tokenFULLbalancematic="$(ethereal --connection=$rpc_polygon token balance --holder=$ethaddress --token=0xea2746be6cf47f376e9b9d6b78a47707559c3a8e)"
 tokenbalancematic="$(printf "%.2f\n" $(echo "$tokenFULLbalancematic" | bc -l))"
