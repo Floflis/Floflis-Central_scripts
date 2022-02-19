@@ -112,7 +112,7 @@ fi
 
 if [ "$currenttoken" = "game" ]; then
    currenttoken_ethereum=""
-   currenttoken_polygon=""
+   currenttoken_polygon="0xa9d47498125dff1647957cf211ea9a010cc0953e"
    currenttoken_xdai="0x4a1901b120e777a2c3d0A19ef41B264cdBCdEe69"
    currenttoken_coingeckoname=""
    echo "Updating GAME token..."
