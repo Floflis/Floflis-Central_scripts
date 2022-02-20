@@ -1,7 +1,5 @@
 #!/bin/bash -e
 
-SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
-
 ethaddress="$(jq -r '.eth' /1/config/user.json)"
 
 rpc_polygon="https://rpc-mainnet.maticvigil.com/"
