@@ -44,8 +44,18 @@ if [ "$(jq -r '.rockstarsofepns' /1/config/nfts.json)" = "null" ]; then
 fi
 
 if [ "$(jq -r '.poap' /1/config/nfts.json)" = "null" ]; then
-   echo "Initializing for Proof of Attendance badges NFT..."
+   echo "Initializing for Proof of Attendance (PoAP) badges NFT..."
    tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + {"poap":{"1":[{"balance":"","metadata":"","name":"","description":"","image":""}]}}' >"$tmp" && mv "$tmp" /1/config/nfts.json
+fi
+
+if [ "$(jq -r '.ens' /1/config/nfts.json)" = "null" ]; then
+   echo "Initializing for ENS domains NFT..."
+   tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + {"ens":{"1":[{"balance":"","metadata":"","name":"","description":"","image":""}]}}' >"$tmp" && mv "$tmp" /1/config/nfts.json
+fi
+
+if [ "$(jq -r '.cryptokitties' /1/config/nfts.json)" = "null" ]; then
+   echo "Initializing for CryptoKitties NFT..."
+   tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + {"cryptokitties":{"1":[{"balance":"","metadata":"","name":"","description":"","image":""}]}}' >"$tmp" && mv "$tmp" /1/config/nfts.json
 fi
 
 processbalances () {
@@ -86,7 +96,23 @@ if [ "$currentnft" = "poap" ]; then
    currentnft_polygon=""
    currentnft_xdai="0x22C1f6050E56d2876009903609a2cC3fEf83B415"
    currentnft_abi="universal-abi.json"
-   echo "Updating Proof of Attendance badges NFT..."
+   echo "Updating Proof of Attendance (PoAP) badges NFT..."
+fi
+
+if [ "$currentnft" = "ens" ]; then
+   currentnft_ethereum="0x57f1887a8bf19b14fc0df6fd9b2acc9af147ea85"
+   currentnft_polygon=""
+   currentnft_xdai=""
+   currentnft_abi="universal-abi.json"
+   echo "Updating ENS domains NFT..."
+fi
+
+if [ "$currentnft" = "cryptokitties" ]; then
+   currentnft_ethereum="0x06012c8cf97bead5deae237070f9587f8e7a266d"
+   currentnft_polygon=""
+   currentnft_xdai=""
+   currentnft_abi="universal-abi.json"
+   echo "Updating CryptoKitties NFT..."
 fi
 
 if [ "$currentnft_ethereum" != "" ]; then
@@ -140,4 +166,14 @@ echo "${contents}" > /1/config/nfts.json
 currentnft="poap"
 processbalances
 contents="$(jq ".poap.\"1\"[].balance = \"$nftbalanceeth\"" /1/config/nfts.json)" && \
+echo "${contents}" > /1/config/nfts.json
+
+currentnft="ens"
+processbalances
+contents="$(jq ".ens.\"1\"[].balance = \"$nftbalanceeth\"" /1/config/nfts.json)" && \
+echo "${contents}" > /1/config/nfts.json
+
+currentnft="cryptokitties"
+processbalances
+contents="$(jq ".cryptokitties.\"1\"[].balance = \"$nftbalanceeth\"" /1/config/nfts.json)" && \
 echo "${contents}" > /1/config/nfts.json
