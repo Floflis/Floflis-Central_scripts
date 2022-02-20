@@ -2,6 +2,9 @@
 
 ethaddress="$(jq -r '.eth' /1/config/user.json)"
 
+rpc_polygon="https://rpc-mainnet.maticvigil.com/"
+rpc_xdai="https://rpc.gnosischain.com/"
+
 if [ "$(jq -r '.danimesqart' /1/config/nfts.json)" = "null" ] || [ "$(jq -r '.danimesqart' /1/config/nfts.json)" = "" ]; then
    echo "Its your first time using nfts-parse.sh!"
    echo "Initializing..."
