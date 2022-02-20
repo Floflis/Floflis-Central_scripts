@@ -18,6 +18,19 @@ if [ "$(jq -r '.danimesqart' /1/config/nfts.json)" = "null" ] || [ "$(jq -r '.da
 	}
 }
 ENDOFFILE
+#   cat > /1/config/nfts.json << ENDOFFILE
+#{
+#	"danimesqart": {
+#		"one": [{
+#		        "balance": "",
+#			"metadata": "",
+#			"name": "",
+#			"description": "",
+#			"image": ""
+#		}]
+#	}
+#}
+#ENDOFFILE
 fi
 
 processbalances () {
@@ -32,25 +45,36 @@ fi
 
 if [ "$currentnft_ethereum" != "" ]; then
    nftFULLbalanceeth="$(ethereal contract call --contract=$currentnft_ethereum --abi=abis/$currentnft_abi --call="balanceOf($ethaddress)" --from=$ethaddress)"
-   echo "Balance: $nftFULLbalanceeth"
-#   nftbalanceeth="$(printf "%.2f\n" $(echo "$nftFULLbalanceeth" | bc -l))"
+   #nftbalanceethprepare="$(printf "%.2f\n" $(echo "$nftFULLbalanceeth" | bc -l))"
+   #nftbalanceeth="$(echo "$nftbalanceethprepare" | tr -d "[" | tr -d "]")"
+   nftbalanceeth="$(echo "$nftFULLbalanceeth" | tr -d "[" | tr -d "]")"
+   echo "Balance: $nftbalanceeth"
 else
    if [ "$currentnft_polygon" != "" ]; then
       nftFULLbalancematic="$(ethereal --connection=$rpc_polygon contract call --contract=$currentnft_ethereum --abi=abis/$currentnft_abi --call="balanceOf($ethaddress)" --from=$ethaddress)"
-#      nftbalancematic="$(printf "%.2f\n" $(echo "$nftFULLbalancematic" | bc -l))"
+      #nftbalancematic="$(printf "%.2f\n" $(echo "$nftFULLbalancematic" | bc -l))"
+      #nftbalancematic="$(echo "$nftbalancematicprepare" | tr -d "[" | tr -d "]")"
+      nftbalancematic="$(echo "$nftFULLbalancematic" | tr -d "[" | tr -d "]")"
+      echo "Balance: $nftbalancematic"
 fi
 
    if [ "$currentnft_xdai" != "" ]; then
       nftFULLbalancexdai="$(ethereal --connection=$rpc_xdai contract call --contract=$currentnft_ethereum --abi=abis/$currentnft_abi --call="balanceOf($ethaddress)" --from=$ethaddress)"
-#      nftbalancexdai="$(printf "%.2f\n" $(echo "$nftFULLbalancexdai" | bc -l))"
+      #nftbalancexdai="$(printf "%.2f\n" $(echo "$nftFULLbalancexdai" | bc -l))"
+      #nftbalancexdai="$(echo "$nftbalancexdaiprepare" | tr -d "[" | tr -d "]")"
+      nftbalancexdai="$(echo "$nftFULLbalancexdai" | tr -d "[" | tr -d "]")"
+      echo "Balance: $nftbalancexdai"
 fi
 fi
 
-#nfttotalbalance=$(echo "$tokenbalanceeth + $tokenbalancematic + $tokenbalancexdai"|bc)
-
-#nfttotalbalance=$(echo "$nftFULLbalanceeth + $nftFULLbalancematic + $nftFULLbalancexdai"|bc)
+#nfttotalbalance=$(echo "$nftbalanceeth + $nftbalancematic + $nftbalancexdai"|bc)
 #echo "total bal: $nfttotalbalance"
 }
 
 currentnft="danimesqart"
 processbalances
+#contents="$(jq ".danimesqart.1[].balance = \"$nftbalanceeth\"" /1/config/nfts.json)" && \
+#contents="$(jq ".danimesqart.one[].balance = \"$nftbalanceeth\"" /1/config/nfts.json)" && \
+#contents="$(jq ".danimesqart."1"[].balance = \"$nftbalanceeth\"" /1/config/nfts.json)" && \
+contents="$(jq ".danimesqart.\"1\"[].balance = \"$nftbalanceeth\"" /1/config/nfts.json)" && \
+echo "${contents}" > /1/config/nfts.json
