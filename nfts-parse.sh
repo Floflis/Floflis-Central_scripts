@@ -43,6 +43,11 @@ if [ "$(jq -r '.rockstarsofepns' /1/config/nfts.json)" = "null" ]; then
    tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + {"rockstarsofepns":{"1":[{"balance":"","metadata":"","name":"","description":"","image":""}]}}' >"$tmp" && mv "$tmp" /1/config/nfts.json
 fi
 
+if [ "$(jq -r '.poap' /1/config/nfts.json)" = "null" ]; then
+   echo "Initializing for Proof of Attendance badges NFT..."
+   tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + {"poap":{"1":[{"balance":"","metadata":"","name":"","description":"","image":""}]}}' >"$tmp" && mv "$tmp" /1/config/nfts.json
+fi
+
 processbalances () {
 if [ "$currentnft" = "danimesqart" ]; then
    currentnft_ethereum="0x1b6b3026B7F5531086f3B8e6CC31C6564BBE2849"
@@ -76,6 +81,14 @@ if [ "$currentnft" = "rockstarsofepns" ]; then
    echo "Updating Rockstars of EPNS NFT..."
 fi
 
+if [ "$currentnft" = "poap" ]; then
+   currentnft_ethereum=""
+   currentnft_polygon=""
+   currentnft_xdai="0x22C1f6050E56d2876009903609a2cC3fEf83B415"
+   currentnft_abi="universal-abi.json"
+   echo "Updating Proof of Attendance badges NFT..."
+fi
+
 if [ "$currentnft_ethereum" != "" ]; then
    nftFULLbalanceeth="$(ethereal contract call --contract=$currentnft_ethereum --abi=abis/$currentnft_abi --call="balanceOf($ethaddress)" --from=$ethaddress)"
    #nftbalanceethprepare="$(printf "%.2f\n" $(echo "$nftFULLbalanceeth" | bc -l))"
@@ -85,7 +98,7 @@ if [ "$currentnft_ethereum" != "" ]; then
 else
    if [ "$currentnft_polygon" != "" ]; then
       nftFULLbalancematic="$(ethereal --connection=$rpc_polygon contract call --contract=$currentnft_polygon --abi=abis/$currentnft_abi --call="balanceOf($ethaddress)" --from=$ethaddress)"
-      #nftbalancematic="$(printf "%.2f\n" $(echo "$nftFULLbalancematic" | bc -l))"
+      #nftbalancematicprepare="$(printf "%.2f\n" $(echo "$nftFULLbalancematic" | bc -l))"
       #nftbalancematic="$(echo "$nftbalancematicprepare" | tr -d "[" | tr -d "]")"
       nftbalancematic="$(echo "$nftFULLbalancematic" | tr -d "[" | tr -d "]")"
       echo "Balance: $nftbalancematic"
@@ -93,7 +106,7 @@ fi
 
    if [ "$currentnft_xdai" != "" ]; then
       nftFULLbalancexdai="$(ethereal --connection=$rpc_xdai contract call --contract=$currentnft_xdai --abi=abis/$currentnft_abi --call="balanceOf($ethaddress)" --from=$ethaddress)"
-      #nftbalancexdai="$(printf "%.2f\n" $(echo "$nftFULLbalancexdai" | bc -l))"
+      #nftbalancexdaiprepare="$(printf "%.2f\n" $(echo "$nftFULLbalancexdai" | bc -l))"
       #nftbalancexdai="$(echo "$nftbalancexdaiprepare" | tr -d "[" | tr -d "]")"
       nftbalancexdai="$(echo "$nftFULLbalancexdai" | tr -d "[" | tr -d "]")"
       echo "Balance: $nftbalancexdai"
@@ -122,4 +135,9 @@ echo "${contents}" > /1/config/nfts.json
 currentnft="rockstarsofepns"
 processbalances
 contents="$(jq ".rockstarsofepns.\"1\"[].balance = \"$nftbalanceeth\"" /1/config/nfts.json)" && \
+echo "${contents}" > /1/config/nfts.json
+
+currentnft="poap"
+processbalances
+contents="$(jq ".poap.\"1\"[].balance = \"$nftbalanceeth\"" /1/config/nfts.json)" && \
 echo "${contents}" > /1/config/nfts.json
