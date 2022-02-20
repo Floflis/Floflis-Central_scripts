@@ -84,7 +84,7 @@ if [ "$currentnft_ethereum" != "" ]; then
    echo "Balance: $nftbalanceeth"
 else
    if [ "$currentnft_polygon" != "" ]; then
-      nftFULLbalancematic="$(ethereal --connection=$rpc_polygon contract call --contract=$currentnft_ethereum --abi=abis/$currentnft_abi --call="balanceOf($ethaddress)" --from=$ethaddress)"
+      nftFULLbalancematic="$(ethereal --connection=$rpc_polygon contract call --contract=$currentnft_polygon --abi=abis/$currentnft_abi --call="balanceOf($ethaddress)" --from=$ethaddress)"
       #nftbalancematic="$(printf "%.2f\n" $(echo "$nftFULLbalancematic" | bc -l))"
       #nftbalancematic="$(echo "$nftbalancematicprepare" | tr -d "[" | tr -d "]")"
       nftbalancematic="$(echo "$nftFULLbalancematic" | tr -d "[" | tr -d "]")"
@@ -92,7 +92,7 @@ else
 fi
 
    if [ "$currentnft_xdai" != "" ]; then
-      nftFULLbalancexdai="$(ethereal --connection=$rpc_xdai contract call --contract=$currentnft_ethereum --abi=abis/$currentnft_abi --call="balanceOf($ethaddress)" --from=$ethaddress)"
+      nftFULLbalancexdai="$(ethereal --connection=$rpc_xdai contract call --contract=$currentnft_xdai --abi=abis/$currentnft_abi --call="balanceOf($ethaddress)" --from=$ethaddress)"
       #nftbalancexdai="$(printf "%.2f\n" $(echo "$nftFULLbalancexdai" | bc -l))"
       #nftbalancexdai="$(echo "$nftbalancexdaiprepare" | tr -d "[" | tr -d "]")"
       nftbalancexdai="$(echo "$nftFULLbalancexdai" | tr -d "[" | tr -d "]")"
