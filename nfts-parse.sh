@@ -13,6 +13,7 @@ if [ "$(jq -r '.danimesqart' /1/config/nfts.json)" = "null" ] || [ "$(jq -r '.da
 	"danimesqart": {
 	        "balance": "",
 		"1": [{
+			"id": "",
 			"metadata": "",
 			"name": "",
 			"description": "",
@@ -30,32 +31,32 @@ if [ "$(jq -r '.expansionpunks' /1/config/nfts.json)" = "null" ]; then
    #tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + "x":{"1":[{"balance":"","metadata":"","name":"","description":"","image":""}]}' >"$tmp" && mv "$tmp" /1/config/nfts.json
    #tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + {"x":{"1":[{"balance":"","metadata":"","name":"","description":"","image":""}]}' >"$tmp" && mv "$tmp" /1/config/nfts.json
    #tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + {"x":{"1":[{"balance":"","metadata":"","name":"","description":"","image":""}]}}' >"$tmp" && mv "$tmp" /1/config/nfts.json
-   tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + {"expansionpunks":{"balance":"","1":[{"metadata":"","name":"","description":"","image":""}]}}' >"$tmp" && mv "$tmp" /1/config/nfts.json
+   tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + {"expansionpunks":{"balance":"","1":[{"id": "","metadata":"","name":"","description":"","image":""}]}}' >"$tmp" && mv "$tmp" /1/config/nfts.json
 fi
 
 if [ "$(jq -r '.axiepet' /1/config/nfts.json)" = "null" ]; then
    echo "Initializing for Axie pet NFT..."
-   tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + {"axiepet":{"balance":"","1":[{"metadata":"","name":"","description":"","image":""}]}}' >"$tmp" && mv "$tmp" /1/config/nfts.json
+   tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + {"axiepet":{"balance":"","1":[{"id": "","metadata":"","name":"","description":"","image":""}]}}' >"$tmp" && mv "$tmp" /1/config/nfts.json
 fi
 
 if [ "$(jq -r '.rockstarsofepns' /1/config/nfts.json)" = "null" ]; then
    echo "Initializing for Rockstars of EPNS NFT..."
-   tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + {"rockstarsofepns":{"balance":"","1":[{"metadata":"","name":"","description":"","image":""}]}}' >"$tmp" && mv "$tmp" /1/config/nfts.json
+   tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + {"rockstarsofepns":{"balance":"","1":[{"id": "","metadata":"","name":"","description":"","image":""}]}}' >"$tmp" && mv "$tmp" /1/config/nfts.json
 fi
 
 if [ "$(jq -r '.poap' /1/config/nfts.json)" = "null" ]; then
    echo "Initializing for Proof of Attendance (PoAP) badges NFT..."
-   tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + {"poap":{"balance":"","1":[{"metadata":"","name":"","description":"","image":""}]}}' >"$tmp" && mv "$tmp" /1/config/nfts.json
+   tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + {"poap":{"balance":"","1":[{"id": "","metadata":"","name":"","description":"","image":""}]}}' >"$tmp" && mv "$tmp" /1/config/nfts.json
 fi
 
 if [ "$(jq -r '.ens' /1/config/nfts.json)" = "null" ]; then
    echo "Initializing for ENS domains NFT..."
-   tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + {"ens":{"balance":"","1":[{"metadata":"","name":"","description":"","image":""}]}}' >"$tmp" && mv "$tmp" /1/config/nfts.json
+   tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + {"ens":{"balance":"","1":[{"id": "","metadata":"","name":"","description":"","image":""}]}}' >"$tmp" && mv "$tmp" /1/config/nfts.json
 fi
 
 if [ "$(jq -r '.cryptokitties' /1/config/nfts.json)" = "null" ]; then
    echo "Initializing for CryptoKitties NFT..."
-   tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + {"cryptokitties":{"balance":"","1":[{"metadata":"","name":"","description":"","image":""}]}}' >"$tmp" && mv "$tmp" /1/config/nfts.json
+   tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + {"cryptokitties":{"balance":"","1":[{"id": "","metadata":"","name":"","description":"","image":""}]}}' >"$tmp" && mv "$tmp" /1/config/nfts.json
 fi
 
 processbalances () {
