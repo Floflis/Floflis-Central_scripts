@@ -18,19 +18,16 @@ if [ "$(jq -r '.danimesqart' /1/config/nfts.json)" = "null" ] || [ "$(jq -r '.da
 	}
 }
 ENDOFFILE
-#   cat > /1/config/nfts.json << ENDOFFILE
-#{
-#	"danimesqart": {
-#		"one": [{
-#		        "balance": "",
-#			"metadata": "",
-#			"name": "",
-#			"description": "",
-#			"image": ""
-#		}]
-#	}
-#}
-#ENDOFFILE
+fi
+
+if [ "$(jq -r '.x' /1/config/nfts.json)" = "null" ]; then
+   echo "Initializing for ExpansionPunks NFT..."
+   #tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + "x":{"1":[{"balance":"","metadata":"","name":"","description":"","image":""}]}' >"$tmp" && mv "$tmp" /1/config/nfts.json
+   #tmp0="$(mktemp)"; cat /1/config/nfts.json | jq '. + "x":{"1":[{"balance":"","metadata":"","name":"","description":"","image":""}]}' >"$tmp" && mv "$tmp" /1/config/nfts.json
+   #tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + "x":{"1":[{"balance":"","metadata":"","name":"","description":"","image":""}]}' >"$tmp" && mv "$tmp" /1/config/nfts.json
+   #tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + {"x":{"1":[{"balance":"","metadata":"","name":"","description":"","image":""}]}' >"$tmp" && mv "$tmp" /1/config/nfts.json
+   #tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + {"x":{"1":[{"balance":"","metadata":"","name":"","description":"","image":""}]}}' >"$tmp" && mv "$tmp" /1/config/nfts.json
+   tmp="$(mktemp)"; cat /1/config/nfts.json | jq '. + {"expansionpunks":{"1":[{"balance":"","metadata":"","name":"","description":"","image":""}]}}' >"$tmp" && mv "$tmp" /1/config/nfts.json
 fi
 
 processbalances () {
@@ -41,6 +38,15 @@ if [ "$currentnft" = "danimesqart" ]; then
    currentnft_abi="universal-abi.json"
 #   currentnft_coingeckoname="ethereum"
    echo "Updating Daniell Mesquita's Arts NFT..."
+fi
+
+if [ "$currentnft" = "expansionpunks" ]; then
+   currentnft_ethereum="0x0d0167a823c6619d430b1a96ad85b888bcf97c37"
+   currentnft_polygon=""
+   currentnft_xdai=""
+   currentnft_abi="universal-abi.json"
+#   currentnft_coingeckoname="ethereum"
+   echo "Updating ExpansionPunks NFT..."
 fi
 
 if [ "$currentnft_ethereum" != "" ]; then
@@ -73,8 +79,10 @@ fi
 
 currentnft="danimesqart"
 processbalances
-#contents="$(jq ".danimesqart.1[].balance = \"$nftbalanceeth\"" /1/config/nfts.json)" && \
-#contents="$(jq ".danimesqart.one[].balance = \"$nftbalanceeth\"" /1/config/nfts.json)" && \
-#contents="$(jq ".danimesqart."1"[].balance = \"$nftbalanceeth\"" /1/config/nfts.json)" && \
 contents="$(jq ".danimesqart.\"1\"[].balance = \"$nftbalanceeth\"" /1/config/nfts.json)" && \
+echo "${contents}" > /1/config/nfts.json
+
+currentnft="expansionpunks"
+processbalances
+contents="$(jq ".expansionpunks.\"1\"[].balance = \"$nftbalanceeth\"" /1/config/nfts.json)" && \
 echo "${contents}" > /1/config/nfts.json
