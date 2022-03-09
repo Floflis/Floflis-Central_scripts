@@ -1,2 +1,5 @@
+nfts-parse.sh: improve looping, based in get-c2-proj-addons.sh
+nfts-parse.sh: don't repeat loop for different networks
+
 for ensname.sh/ethaddress-sybil_verify.sh: don't work if no ens/twitter handle comes
 for C2: don't add elements if there's no ENS name/Twitter sybil
