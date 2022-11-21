@@ -1,0 +1,12 @@
+https://etherscan.io/tx/0x5ec681c67724e9a7e03ccabaa092a3dfb30af91fa73fdc6de558f9056a8488b8
+
+Tasks.txt
+tokenbalance.sh
+tokenbalance-others.sh
+test.sh
+personalization-update.sh
+fullname.sh
+ethaddress-sybil_verify.sh
+ensname.sh
+bashc2-communication_ethgas.sh
+nfts-parse.sh
